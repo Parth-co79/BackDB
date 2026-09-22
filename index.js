@@ -19,19 +19,23 @@ app.get("/assignments",async(req,res)=>{
     console.error(err);
   } 
 })
-app.post("/assignments",async(req,res)=>{
-    const {title, deadline, submitted} = req.body;
+app.post("/assignments", async (req, res) => {
+    const { title, deadline } = req.body;
     try {
-    let res = await pool.query(`INSERT INTO assignments
-(title, deadline,submitted)
-VALUES ($1, $2, $3)
-RETURNING *;
-`,[title, deadline, submitted]); 
-    console.log(res.rows);
-  } catch (err) {
-    console.error(err);
-  } 
-})
+        const result = await pool.query(
+            `INSERT INTO assignments (title, deadline)
+             VALUES ($1, $2)
+             RETURNING *`,
+            [title, deadline]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            message: "Error creating assignment"
+        });
+    }
+});
 
 
 async function getData() {
