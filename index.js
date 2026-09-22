@@ -11,14 +11,20 @@ const pool = new Pool({
     database: 'z1',
 });
 
-app.get("/assignments",async(req,res)=>{
+app.get("/assignments", async (req, res) => {
     try {
-    let res = await pool.query('SELECT * FROM assignments'); 
-    console.log(res.rows);
-  } catch (err) {
-    console.error(err);
-  } 
-})
+        const result = await pool.query(
+            `SELECT * FROM assignments
+             ORDER BY id DESC`
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            message: "Error fetching assignments"
+        });
+    }
+});
 app.post("/assignments", async (req, res) => {
     const { title, deadline } = req.body;
     try {
